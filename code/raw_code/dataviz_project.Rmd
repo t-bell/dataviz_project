@@ -1,6 +1,6 @@
 ---
 title: "Data Visualization Project"
-author: "Jane Doe"
+author: "Tiana Bell"
 date: "6/19/2018"
 output: html_document
 ---
