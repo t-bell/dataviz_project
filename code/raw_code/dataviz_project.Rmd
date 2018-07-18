@@ -99,10 +99,10 @@ pets$ym <- as.yearmon(pets$date, "%y%m")
 ## how the number of licenses recorded has changed over time
 pets %>%
   ## group by yearmonth (`ym`)
-  group_by(`ym`) %>% 
+  group_by(ym) %>% 
   ## count number within each group
   count(n=n()) %>%
-  ggplot(., aes(x = pets$ym, y = n)) + 
+  ggplot(., aes(x = ym, y = n)) + 
   ## geom name for line chart
   geom_line() +
   scale_x_yearmon() + 
@@ -205,14 +205,14 @@ p <- ggplot(pref) +
                            "#B36153",
                            "#B5413F")) +
   ## change the scale/labels of the steak-wellness variable (x-axis)
-  scale_x_continuous(limits = levels(fct_rev(pref$steak_pref)),
+  scale_x_discrete(limits = levels(fct_rev(pref$steak_pref)),
                 labels = c("Well", 
                            "Medium Well" = "Medium-well",
                            "Medium",
                            "Medium rare"="Medium-rare",
                            "Rare")) +
   ## change the scale/lables of the percent axis (y-axis)
-  scale_y_continuous(labels = scales::percent, 
+  scale_y_discrete(labels = scales::percent, 
                 expand = c(mult = c(0,0), 
                            add = c(0,0.035))) +
   ## change the title, subtitle, and caption
@@ -230,6 +230,7 @@ p <- ggplot(pref) +
                 panel.grid.minor = element_blank(),
                 axis.text.x = element_blank() 
   )
+p
 
 ```
 
