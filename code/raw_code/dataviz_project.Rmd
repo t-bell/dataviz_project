@@ -144,7 +144,20 @@ steak <- read.csv("/cloud/project/dataviz_project/data/raw_data/steak-risk-surve
 
 ```{r meat-explore, warning=FALSE} 
 ## Include code here to explore the data 
-## and answer the questions in the exercise
+## and answer the questions in the exercise## Include code here to explore the data
+#call df to print
+steak
+#call names() to view columns
+names(steak)
+# dimensions
+dim(steak)
+str(steak)
+levels(steak)
+summary(steak)
+#how many responded "yes" to 'do you eat steak?'
+table(steak$Do.you.eat.steak.)
+#responses to how they like their steak prepared
+table(steak$How.do.you.like.your.steak.prepared.)
 ```
 
 ## Wrangle the Data
@@ -162,6 +175,8 @@ pref <- steak %>%
   group_by(steak_pref) %>% 
   summarise(n = n()) %>%
   mutate(prop = n / sum(n))
+
+print(pref)
 ```
 
 ## Visualize the Data
