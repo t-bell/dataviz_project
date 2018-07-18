@@ -238,7 +238,7 @@ p
 
 ```{r save-plot, warning=FALSE}
 ## save plot to figures/explanatory_figures directory
-ggsave(plot = OBJECT_NAME, filename = FILENAME, width = 8, height = 4)
+ggsave(filename = steak_R.png, plot = last.plot(p) path = "/cloud/project/dataviz_project/figures/explanatory_figures", width = 8, height = 4)
 ```
 
 ## Visualize the Data
