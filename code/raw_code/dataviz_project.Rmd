@@ -7,10 +7,11 @@ output: html_document
 
 ```{r setup, include=FALSE}
 ## install packages if necessary
-list.of.packages <- c("janitor", "ggplot2", "dplyr", "lubridate", "zoo", "forcats", "ggthemes")
+list.of.packages <- c("janitor", "ggplot2", "dplyr", "lubridate", "zoo", "forcats", "ggthemes", "knitr", "rmarkdown")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
+## load packages
 library(janitor)
 library(ggplot2)
 library(dplyr)
@@ -18,6 +19,10 @@ library(lubridate)
 library(zoo)
 library(forcats)
 library(ggthemes)
+library(knitr)
+
+## set working directory
+knitr::opts_knit$set(root.dir = '/cloud/project')
 ```
 
 # Part 1: Exploratory Data Analysis
@@ -30,13 +35,23 @@ The data we'll be using for this part of the project were downloaded from [kaggl
 First, we'll read the data in from our `data/raw_data` directory.
 
 ```{r pet-data, warning=FALSE} 
-pets <- read.csv("data/raw_data/seattle_pet_licenses.csv", stringsAsFactors = FALSE)
+pets <- read.csv("/cloud/project/dataviz_project/data/raw_data/seattle_pet_licenses.csv", stringsAsFactors = FALSE)
 ```
 
 ## Explore the Data
 
 ```{r pet-explore, warning=FALSE} 
-## Include code here to explore the data 
+## Include code here to explore the data
+#call df to print
+pets
+#call names() to view columns
+names(pets)
+#unique pet names
+pet_names_unique <- pets %>%
+                    distinct(animal_s_name, "[A-Za-z]", 
+                    .keep_all = TRUE)
+#call new set
+print(pet_names_unique)
 ## and answer the questions in the exercise
 ```
 
@@ -45,48 +60,70 @@ pets <- read.csv("data/raw_data/seattle_pet_licenses.csv", stringsAsFactors = FA
 ```{r pet-barchart, warning=FALSE} 
 ## visual breakdown of how many of each species 
 ## are included in the dataset
-ggplot(DATASET) +
-  geom_bar(aes(x=VARIABLE))
+ggplot(pets, aes(x = species)) +
+  geom_bar()
 ```
 
 ```{r pet-cat-table, warning=FALSE} 
 ## Table: Most frequent Cat Name 
-DATASET %>% 
-  filter(species == "SPECIES",VARIABLE != "") %>%
-  group_by(VARIABLE) %>% 
+table(pets$species)
+
+pets %>% 
+  filter(species == "Cat", animal_s_name != "") %>%
+  group_by(animal_s_name) %>% 
   summarise(n = n()) %>% 
   arrange(-n) %>%
   top_n(n = 10) %>%
-  kable(., caption = "Top 10 Cat Names in Seattle")
+  knitr::kable(., caption = "Top 10 Cat Names in Seattle")
 ```
 
 ```{r pet-dog-table, warning=FALSE} 
 ## Table: Most frequent Dog Name
 ## ADD CODE!
+pets %>% 
+  filter(species == "Dog", animal_s_name != "") %>%
+  group_by(animal_s_name) %>% 
+  summarise(n = n()) %>% 
+  arrange(-n) %>%
+  top_n(n = 10) %>%
+  knitr::kable(., caption = "Top 10 Dog Names in Seattle")
 ```
+
+
 
 ```{r pet-linechart, warning=FALSE} 
 ## add date and ym columns
-pets <- pets %>%  
-  mutate(date =  lubridate::ymd_hms(license_issue_date),
-         ym = as.yearmon(pets$date, "%y%m"))
+pets$date <- lubridate::ymd_hms(pets$license_issue_date)
+pets$ym <- as.yearmon(pets$date, "%y%m")
 
 ## how the number of licenses recorded has changed over time
 pets %>%
   ## group by yearmonth (`ym`)
-  function_name(VARIABLE) %>% 
+  group_by(`ym`) %>% 
   ## count number within each group
-  function_name(n=n()) %>%
-  ggplot(., aes(VARIABLE, n)) + 
+  count(n=n()) %>%
+  ggplot(., aes(x = pets$ym, y = n)) + 
   ## geom name for line chart
-  geom_GEOM() +
+  geom_line() +
   scale_x_yearmon() + 
   xlab("") + 
   ylab("Number of licenses")
 ```
 
+
+
 ```{r pet-plot, warning=FALSE} 
-### Explore the data -- create your own plot!
+
+pets %>%
+  ## group by yearmonth (`ym`)
+  group_by(`species`) %>% 
+  ## count number within each group
+  count(n=n()) %>%
+  ggplot(., aes(x = species, y = zip_code)) + 
+  ## geom name for line chart
+  geom_line() +
+  
+ 
 
 ```
 
@@ -98,7 +135,7 @@ The data used in this part of the project were dowloaded from [FiveThirtyEight](
 
 ```{r meat-data, warning=FALSE} 
 ## read in the data
-steak <- read.csv("data/raw_data/steak-risk-survey.csv", stringsAsFactors = FALSE) %>%
+steak <- read.csv("/cloud/project/dataviz_project/data/raw_data/steak-risk-survey.csv", stringsAsFactors = FALSE) %>%
   ## remove first row which just includes the word "Response" in each column
   slice(2:n())
 ```
